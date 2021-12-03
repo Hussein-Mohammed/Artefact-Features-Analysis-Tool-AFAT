@@ -1,0 +1,89 @@
+﻿@page
+@model Cuneiform_Style_Analyser.Pages.View_ListsModel
+@inject Cuneiform_Style_Analyser.Headers.Uploaded_CSO CSO
+@{
+    ViewData["Title"] = "Uploaded Cuneiform Signs Occurrences";
+}
+
+<h3 style="text-align:center; font-style:italic">@ViewData["Title"]</h3>
+
+<hr />
+
+@{
+    if (CSO.All_CSO_Tables != null && CSO.All_CSO_Tables.Count() > 0)
+    {
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="text-align:center">
+                        Name of CS Style
+                    </th>
+                    <th style="text-align:center">
+                        Number of Uploaded Tablets
+                    </th>
+                </tr>
+            </thead>
+            @foreach (var Styles in CSO.All_CSO_Tables)
+            {
+                <tr>
+                    <th style="text-align:center">
+                        <button type="button" class="collapsible" style="text-align:center">@Styles.FileName</button>
+                        <div class="content">
+
+                            @foreach (var Tab in Styles.Cuneiform_Tablet)
+                            {
+                                <p style="text-align:center">@Tab.Tablet_Name</p>
+                            }
+                        </div>
+                    </th>
+                    <th style="text-align:center">
+                        @Styles.Cuneiform_Tablet.Count()
+                    </th>
+                    <th style="text-align:center">
+                        <form method="post" asp-page-handler="DeleteTable">
+                            <button class="btn btn-default" asp-page-handler="DeleteTable">Delete</button>
+                            <input type="hidden" name="FN" value="@Styles.FileName" />
+                        </form>
+                    </th>
+                </tr>
+            }
+        </table>
+
+    }
+    else
+    {
+        <h4 style="color:crimson"> No valid files uploaded yet! Please check the instructions in the upload page.</h4>
+    }
+
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <h1 style="text-align:center"><a asp-page="/Index"> <button class="btn btn-primary">Back</button> </a> </h1>
+    </div>
+    <div class="col-md-6">
+        <form method="post" asp-page-handler="Calculate">
+            <button type="submit" class="btn btn-primary" style="position:center; display:block; margin-left:auto; margin-right:auto; font-size:x-large">Calculate Statistics</button>
+        </form>
+    </div>
+</div>
+
+<hr />
+<div style="border-style:solid; border-color:blue; border-width:medium; border-radius:10px; padding:3px">
+    <h3 style="text-align:center">Guidelines:</h3>
+    <ul>
+        <li>
+            You can view the extracted tablets from each table by clicking on the name of the style.
+        </li>
+        <li>
+            Check the list of uploaded tables and validate whether the extracted tablets of each table are correct.
+        </li>
+        <li>
+            The number of styles corresponds to the number of valid files only. Any invalid file will be ignored by the application.
+        </li>
+        <li>
+            You can delete any style by simply clicking the "Delete" button.
+        </li>
+    </ul>
+</div>

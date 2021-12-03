@@ -1,0 +1,217 @@
+﻿@page
+@model Cuneiform_Style_Analyser.Pages.StatisticsModel
+@inject Cuneiform_Style_Analyser.Headers.Uploaded_CSO CSO
+@{
+    ViewData["Title"] = "Calculated Statistics and Similarities";
+}
+
+<h3 style="text-align:center; font-style:italic">@ViewData["Title"]</h3>
+<hr />
+<h4 style="text-align:center; font-style:italic">Statistical Results</h4>
+@{
+    if (CSO.All_CSO_Tables == null || CSO.All_CSO_Tables.Count() < 1)
+    {
+        <h3> No results to show, please start a new test.</h3>
+        <h3 style="text-align:center"><a asp-page="/Index">Start a new test</a> </h3>
+    }
+    else
+    {
+        foreach (var table in CSO.All_CSO_Tables)
+        {
+            <button type="button" class="collapsible" style="text-align:center">Results for @table.FileName</button>
+            <div class="content">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="row">
+                            <table border="1" class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center">
+                                            Tablet
+                                        </th>
+                                        <th style="text-align:center">
+                                            Mean Distance
+                                        </th>
+                                        <th style="text-align:center">
+                                            Standard Deviation
+                                        </th>
+                                    </tr>
+                                </thead>
+                                @if (table.Cuneiform_Tablet != null && table.Cuneiform_Tablet.Count > 0)
+                                {
+                                    foreach (var tab in table.Cuneiform_Tablet)
+                                    {
+                                        <tr>
+                                            <td style="text-align:center">
+                                                @tab.Tablet_Name
+                                            </td>
+                                            <td style="text-align:center">
+                                                @Math.Round(tab.Mean_Dist, 2)
+                                            </td>
+                                            <td style="text-align:center">
+                                                @Math.Round(tab.SD_Dist, 2)
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-4">
+                        <div class="row">
+                            <table border="1" class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center">
+                                            Average Mean
+                                        </th>
+                                        <th style="text-align:center">
+                                            Average SD
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:center">
+                                            @Math.Round(table.Avg_Mean_Dist, 2)
+                                        </td>
+                                        <td style="text-align:center">
+                                            @Math.Round(table.Avg_SD_Dist, 2)
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-2">
+                        <div class="row">
+                            <table border="1" class="table">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align:center">
+                                            Outliers
+                                        </th>
+                                    </tr>
+                                </thead>
+                                @if (table.Outliers_Tablets != null && table.Outliers_Tablets.Count() > 0)
+                                {
+                                    @foreach (var Outlier in table.Outliers_Tablets)
+                                    {
+                                        <tr>
+                                            <td style="text-align:center">
+                                                @Outlier
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr />
+        }
+    }
+}
+<div class="row">
+    <div class="col-12">
+        <form method="post">
+            <div class="text-center">
+                <button class="btn btn-primary" asp-page-handler="DownloadStatistics" id="DownloadStatistics" style="font-size:x-large">Download Statistics</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<hr />
+<h4 style="text-align:center; font-style:italic">Distance Results</h4>
+@{
+    if (CSO.All_CSO_Tables.Count() <= 0)
+    {
+        <h3> No results to show, please start a new test.</h3>
+        <h3 style="text-align:center"><a asp-page="/Index">Start a new test</a> </h3>
+    }
+    else
+    {
+        if (CSO.All_CSO_Tables != null && CSO.All_CSO_Tables.Count() > 0)
+        {
+            foreach (var table in CSO.All_CSO_Tables)
+            {
+                <button type="button" class="collapsible" style="text-align:center">Results for @table.FileName</button>
+                <div class="content">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:center">
+                                    Style Name
+                                </th>
+                                <th style="text-align:center">
+                                    Distance (L2)
+                                </th>
+                            </tr>
+                        </thead>
+                        @if (table.style_Distances != null && table.style_Distances.Count() > 0)
+                        {
+                            @foreach (var Res in table.style_Distances)
+                            {
+                                <tr>
+                                    <th style="text-align:center">
+                                        @Res.Item1
+                                    </th>
+                                    <th style="text-align:center">
+                                        @Res.Item2
+                                    </th>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </div>
+                <hr />
+            }
+        }
+    }
+}
+
+<div class="row">
+    <div class="col-12">
+        <form method="post">
+            <div class="text-center">
+                <button class="btn btn-primary" asp-page-handler="DownloadSimilarities" id="DownloadSimilarities" style="font-size:x-large">Download Distances</button>
+            </div>
+        </form>
+    </div>
+
+</div>
+<hr />
+<div class="row">
+    <div class="col-12">
+        <h1 style="text-align:center"><a asp-page="/Index"> <button class="btn btn-primary">Start New Analysis</button> </a> </h1>
+    </div>
+</div>
+<hr />
+<div style="border-style:solid; border-color:blue; border-width:medium; border-radius:10px; padding:3px">
+    <h3 style="text-align:center">Guidelines:</h3>
+    <ul>
+        <li>
+            The euclidean distance is calculated between each tablet occurrences within the same style.
+            Then these distance values are used to calculate the Mean and Standard Deviation (SD) of the
+            tablets (Individual statistics) and the style (General statistics).
+        </li>
+        <li>
+            The mean distance and the standard distance deviation of each tablet is calculated in relation
+            to the other tablets within the same style.
+        </li>
+        <li>
+            The average of all mean distances and standard deviations from all tablets within a given style
+            is calculated.
+        </li>
+        <li>
+            The statistical outliers (if any) are detected in each style. Cuneiform Signs Occurrences of a
+            given tablet is assumed to be an exception/outlier/abnormal if the difference between it's mean
+            distance and the mean distance of the whole style is greater than the standard amount of deviation.
+            This does not mean that the outliers does not belong to the style, it only means that you should have
+            a careful look at them.
+        </li>
+    </ul>
+</div>
