@@ -68,15 +68,6 @@ namespace Cuneiform_Style_Analyser.Pages
        
             // Statistics Calculation
             Cuneiform_Signs CSO = new Cuneiform_Signs();
-            //List<CSO_Table> Current_CSO_Tables = new List<CSO_Table>();
-            //Current_CSO_Tables = CSO.DeepCopy(_uploaded_CSO.All_CSO_Tables);
-            foreach (CSO_Table table in _uploaded_CSO.All_CSO_Tables)
-            {
-                foreach (Tablet tab in table.Cuneiform_Tablet)
-                {
-                    tab.CSO_Features = CSO.Extract_Features_CSO_Tablet(tab).Clone();
-                }
-            }
 
             foreach (CSO_Table table in _uploaded_CSO.All_CSO_Tables)
             {
@@ -184,68 +175,7 @@ namespace Cuneiform_Style_Analyser.Pages
 
                 Results_csv.Clear();
             }
-            /*
-            /// Calculate similarities between CS styles using NLNBNN
-            foreach (CSO_Table Outer_table in _uploaded_CSO.All_CSO_Tables)
-            {
-                Mat Current_CSO_Features = new Mat();
-                Current_CSO_Features = CSO.Extract_Features_CSO_Table(Outer_table);
-
-                Mat All_CSO_Features = new Mat();
-                List<int> Labels = new List<int>();
-                int Label_Counter = 0;
-                List<string> Tables_Names = new List<string>();
-                List<int> Features_Num = new List<int>();
-                foreach (CSO_Table Inner_table in _uploaded_CSO.All_CSO_Tables)
-                {
-                    if (Inner_table.FileName == Outer_table.FileName)
-                        continue;
-
-                    Tables_Names.Add(Inner_table.FileName);
-                    Mat Temp_Features = new Mat();
-                    Temp_Features = CSO.Extract_Features_CSO_Table(Inner_table);
-                    All_CSO_Features.PushBack(CSO.Extract_Features_CSO_Table(Inner_table));
-
-                    Labels.AddRange(Enumerable.Repeat(Label_Counter, Temp_Features.Rows));
-                    Label_Counter++;
-                    Features_Num.Add(Temp_Features.Rows);
-                }
-                          
-                // Use the NLNBNN Classifier
-                KDTreeIndexParams Index_Param = new KDTreeIndexParams(4);
-                OpenCvSharp.Flann.Index Descs_Index = new OpenCvSharp.Flann.Index(All_CSO_Features, Index_Param, FlannDistance.L2);
-
-                NormalisedLNBNN XRF_Classifier = new NormalisedLNBNN();
-
-                List<LocalNBNN_Results> CurrentResult = new List<LocalNBNN_Results>();
-                CurrentResult = XRF_Classifier.NNSearch_LNBNN_Priori(Current_CSO_Features, Labels, Descs_Index,
-                                                       (_uploaded_CSO.All_CSO_Tables.Count()-1), Features_Num);
-
-                // Prepare the results and write them to ".csv" files
-                CurrentResult = CurrentResult.OrderByDescending(x => x.Votes).ToList();
-
-                var Results_csv = new System.Text.StringBuilder();
-
-
-                Results_csv.AppendLine("Results for " + Outer_table.FileName);
-                Results_csv.AppendLine("Rank,Style,Similarity(NLNBNN)");
-
-                int RankCounter = 1;
-                foreach (var Res in CurrentResult)
-                {
-                    ;
-                    Outer_table.style_Similarities.Add(new Tuple<string, double>(Tables_Names[RankCounter - 1], Math.Round(Res.Votes, 1)));
-                    Results_csv.AppendLine(Convert.ToString(RankCounter) + "," + Tables_Names[RankCounter - 1] + "," + Convert.ToString(Math.Round(Res.Votes, 1)));
-                    RankCounter++;
-                }
-
-                Results_csv.AppendLine("");
- 
-                System.IO.File.WriteAllText(Similarities_Tables_Path + "/" + Outer_table.FileName + ".csv", Results_csv.ToString());
-
-                Results_csv.Clear();
-            }
-            */
+           
             return RedirectToPage("Statistics");
         }
     }

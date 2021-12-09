@@ -146,7 +146,7 @@ namespace Cuneiform_Style_Analyser.Pages
                 }
 
                 /// Calculate average occurrences for each table
-                CSO_Data.Average_Occurrences(_Uploaded_CSO.All_CSO_Tables);
+               
 
                 /// Check if all tables have equal number of signs
                 List<int> Signs_Number = new List<int>();

@@ -1,4 +1,5 @@
-﻿using OpenCvSharp;
+﻿using Microsoft.AspNetCore.Hosting;
+using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,6 @@ namespace Cuneiform_Style_Analyser.Headers
         public double Avg_SD_Dist = new double();
         public List<string> Outliers_Tablets = new List<string>();
         public List<Tuple<string, double>> style_Distances = new List<Tuple<string, double>>();
-        public List<float> Average_Occurrences = new List<float>();
 
         public CSO_Table DeepCopy()
         {
@@ -34,11 +34,6 @@ namespace Cuneiform_Style_Analyser.Headers
                 CSO_Table_Temp.Cuneiform_Tablet.Add(Tablet_Temp);
             }
 
-            foreach (float Occ in Average_Occurrences)
-            {
-                CSO_Table_Temp.Average_Occurrences.Add(Occ);
-            }
-
             return CSO_Table_Temp;
         }
     }
@@ -47,7 +42,8 @@ namespace Cuneiform_Style_Analyser.Headers
     {
         public string Tablet_Name;
         public double TotalNumberOfSigns = new double();
-        public List<float> Occurrences = new List<float>();
+        public List<string> Occurrences = new List<string>();
+        public List<VariantAndVariation> SignVersions = new List<VariantAndVariation>();
         public Mat Dist = new Mat();
         public double Mean_Dist = new double();
         public double SD_Dist = new double();
@@ -62,9 +58,15 @@ namespace Cuneiform_Style_Analyser.Headers
             Tablet_Temp.SD_Dist = SD_Dist;
             Tablet_Temp.CSO_Features = CSO_Features.Clone();
             Tablet_Temp.Dist = Dist.Clone();
-            foreach (float Occ in Occurrences)
+
+            foreach (string Occ in Occurrences)
             {
                 Tablet_Temp.Occurrences.Add(Occ);
+            }
+
+            foreach (VariantAndVariation SV in SignVersions)
+            {
+                Tablet_Temp.SignVersions.Add(SV);
             }
 
             return Tablet_Temp;
@@ -78,8 +80,37 @@ namespace Cuneiform_Style_Analyser.Headers
 
     }
 
+    public class VariantAndVariation
+    {
+        public string Variant { get; set; } = "";
+        public string Variation { get; set; } = "";
+        public int count { get; set; } = 0;
+    }
+
     public class Cuneiform_Signs
     {
+        private IWebHostEnvironment _hostingEnvironment;
+        private readonly Uploaded_CSO _uploaded_CSO;
+
+        public Cuneiform_Signs(IWebHostEnvironment hostingEnvironment, Uploaded_CSO Uploaded_CSO)
+        {
+            _hostingEnvironment = hostingEnvironment;
+            _uploaded_CSO = Uploaded_CSO;
+        }
+
+        public List<CSO_Table> DeepCopy(List<CSO_Table> Tables)
+        {
+            List<CSO_Table> Tables_Results = new List<CSO_Table>();
+
+            foreach (CSO_Table table in Tables)
+            {
+                CSO_Table temp = table.DeepCopy();
+                Tables_Results.Add(temp);
+            }
+
+            return Tables_Results;
+        }
+
         /// Read the signs occurrences from all tables in Path
         public List<CSO_Table> Read_CSO_Tables(string FilePath)
         {
@@ -111,7 +142,7 @@ namespace Cuneiform_Style_Analyser.Headers
 
                     string[] values = First_Line.Split(',', ';');
 
-                    // Check if the table contains the total number of diagnostic signs
+                    // Check if the table contains the total number of diagnostic signs // Not needed anymore
                     if (values[1].ToLower() == "total")
                     {
                         FirstSign = 2;
@@ -149,11 +180,11 @@ namespace Cuneiform_Style_Analyser.Headers
 
                         for (int i = FirstSign; i < values.Length; i++)
                         {
-                            if(string.IsNullOrEmpty(values[i]))
+                            if (string.IsNullOrEmpty(values[i]))
                             {
                                 values[i] = "0";
                             }
-                            Current_Tablet.Occurrences.Add(float.Parse(values[i]));
+                            Current_Tablet.Occurrences.Add(values[i]);
                         }
                         Current_Cuneiform_Table.Cuneiform_Tablet.Add(Current_Tablet);
                     }
@@ -165,100 +196,104 @@ namespace Cuneiform_Style_Analyser.Headers
             return All_Cuneiform_Tables;
         }
 
-        public Mat Extract_Features_CSO_Table(CSO_Table Cuneiform_Table)
+        /// <summary>
+        /// Parse the occurrences of a tablet and store them as variants and variations
+        /// </summary>
+        /// <param name="Tab"></param>
+        public void ParseOccurrences(Tablet Tab)
         {
-            Mat Cuneiform_Features = new Mat();
-
-
-            foreach (Tablet Tab in Cuneiform_Table.Cuneiform_Tablet)
+            for (int i = 0; i < Tab.Occurrences.Count(); i++)
             {
-                List<float> Current_Occurrences = new List<float>();
-                Current_Occurrences.AddRange(Tab.Occurrences);
-                Mat Current_Cuneiform_Features = new Mat();
-                foreach (int i in Current_Occurrences)
-                {
-                    double Normalised_Occurrences = new double();
-                    if (Tab.TotalNumberOfSigns > 0)
-                    {
-                        Normalised_Occurrences = i / Tab.TotalNumberOfSigns;
-                        Current_Cuneiform_Features.PushBack(Normalised_Occurrences);
-                    }
-                    else
-                    {
-                        Current_Cuneiform_Features.PushBack(i);
-                    }
-                }
-                Current_Cuneiform_Features = Current_Cuneiform_Features.T();
-                Cuneiform_Features.PushBack(Current_Cuneiform_Features);
-            }
-            Cuneiform_Features.ConvertTo(Cuneiform_Features, MatType.CV_32F);
+                string CurOccTab = Tab.Occurrences[i];
+                VariantAndVariation CurVersion_Tab = new VariantAndVariation();
 
-            return Cuneiform_Features;
+                if (CurOccTab.Count() == 1)
+                {
+                    CurVersion_Tab.count = 1;
+                    CurVersion_Tab.Variant = CurOccTab;
+                    Tab.SignVersions.Add(CurVersion_Tab);
+                }
+
+                if (CurOccTab.Count() == 2)
+                {
+                    CurVersion_Tab.count = 2;
+                    CurVersion_Tab.Variant = CurOccTab.Substring(0, 1);
+                    CurVersion_Tab.Variation = CurOccTab.Substring(1, 2);
+                    Tab.SignVersions.Add(CurVersion_Tab);
+                }
+            }
         }
 
-        public Mat Extract_Features_CSO_Tablet(Tablet Cuneiform_Tablet)
+        /// <summary>
+        /// Calculate the distance between different versions of signs, based of the variant and variation of each sign
+        /// </summary>
+        /// <param name="SignVersions1"></param>
+        /// <param name="SignVersions2"></param>
+        /// <returns></returns>
+        public List<double> SignsDistance(List<VariantAndVariation> SignVersions1, List<VariantAndVariation> SignVersions2)
         {
-            Mat Tablet_Features = new Mat();
+            List<double> Distances = new List<double>();
 
-            List<float> Current_Occurrences = new List<float>();
-            Current_Occurrences.AddRange(Cuneiform_Tablet.Occurrences);
-            foreach (int i in Current_Occurrences)
+            for (int i = 0; i < SignVersions1.Count(); i++)
             {
-                double Normalised_Occurrences = new double();
-                if (Cuneiform_Tablet.TotalNumberOfSigns > 0)
+                double CurDist = 0;
+                if(!SignVersions1[i].Variant.Equals(SignVersions2[i].Variant, StringComparison.OrdinalIgnoreCase))
                 {
-                    Normalised_Occurrences = i / Cuneiform_Tablet.TotalNumberOfSigns;
-                    Tablet_Features.PushBack(Normalised_Occurrences);
+                    CurDist = 1;
                 }
                 else
                 {
-                    Tablet_Features.PushBack(i);
-                }
-            }
-            Tablet_Features = Tablet_Features.T();
-            Tablet_Features.ConvertTo(Tablet_Features, MatType.CV_32F);
-            return Tablet_Features;
-        }
-
-        public void Average_Occurrences(List<CSO_Table> Tables)
-        {
-            foreach (CSO_Table table in Tables)
-            {
-                table.Average_Occurrences = Enumerable.Repeat(0.0F, table.Signs.Count()).ToList();
-                foreach (Tablet tab in table.Cuneiform_Tablet)
-                {
-                    for (int Occ = 0; Occ < tab.Occurrences.Count(); Occ++)
+                    if (SignVersions1[i].Variation.Equals(SignVersions2[i].Variation, StringComparison.OrdinalIgnoreCase))
                     {
-                        double Normalised_Occurrences = new double();
-                        if (tab.TotalNumberOfSigns > 0)
-                        {
-                            Normalised_Occurrences = tab.Occurrences[Occ] / tab.TotalNumberOfSigns;
-                            table.Average_Occurrences[Occ] += Convert.ToSingle(Normalised_Occurrences);
-                        }
-                        else
-                        {
-                            table.Average_Occurrences[Occ] += Convert.ToSingle(tab.Occurrences[Occ]);
-                        }
+                        CurDist = 0;
+                    }
+                    else
+                    {
+                        CurDist = 1.0 / _uploaded_CSO.VariationsNumber[i];
                     }
                 }
-                for (int Occ = 0; Occ < table.Average_Occurrences.Count(); Occ++)
-                {
-                    table.Average_Occurrences[Occ] /= table.Cuneiform_Tablet.Count();
-                }
             }
+
+            return Distances;
         }
 
-        public List<CSO_Table> DeepCopy(List<CSO_Table> Tables)
+        /// <summary>
+        /// Calcuates the number of variations for all the signs in all the tables
+        /// </summary>
+        /// <param name="Tables"></param>
+        /// <returns></returns>
+        public List<int> CalculateNumberOfVariations(List<CSO_Table> Tables)
         {
-            List<CSO_Table> Tables_Results = new List<CSO_Table>();
+            List<int> VariationsNumber = new List<int>();
+            char[] az = Enumerable.Range('a', 'z' - 'a' + 1).Select(i => (Char)i).ToArray();
+            List<string> Alphabet = new List<string>();
+            foreach (var c in az)
+            {
+                Alphabet.Add(c.ToString());
+            }
 
             foreach (CSO_Table table in Tables)
             {
-                CSO_Table temp = table.DeepCopy();
-                Tables_Results.Add(temp);
+                foreach (Tablet tab in table.Cuneiform_Tablet)
+                {
+                    int index = 0;
+                    foreach (VariantAndVariation version in tab.SignVersions)
+                    {
+                        string CurVariation = version.Variation;
+                        int CurIndex = Alphabet.FindIndex(x => x == CurVariation);
+                        int CurVariationNumber = CurIndex + 1;
+                        if(CurVariationNumber > _uploaded_CSO.VariationsNumber[index])
+                        {
+                            _uploaded_CSO.VariationsNumber[index] = CurVariationNumber;
+                        }
+
+                        index++;
+                    }
+                    
+                }
             }
 
-            return Tables_Results;
+            return VariationsNumber;
         }
 
         public MeanAndSD MeanAndSD_ForL2(List<Tablet> Tablets)
