@@ -67,7 +67,7 @@ namespace Cuneiform_Style_Analyser.Pages
             Directory.EnumerateFiles(CSO_Statistics_Path).ToList().ForEach(f => System.IO.File.Delete(f));
        
             // Statistics Calculation
-            Cuneiform_Signs CSO = new Cuneiform_Signs();
+            Cuneiform_Signs CSO = new Cuneiform_Signs(_uploaded_CSO);
 
             foreach (CSO_Table table in _uploaded_CSO.All_CSO_Tables)
             {
@@ -124,6 +124,7 @@ namespace Cuneiform_Style_Analyser.Pages
             }
 
             // Calculate distances between Styles
+            /*
             foreach (CSO_Table Outer_table in _uploaded_CSO.All_CSO_Tables)
             {
                 List<double> Current_Distances = new List<double>();
@@ -175,7 +176,7 @@ namespace Cuneiform_Style_Analyser.Pages
 
                 Results_csv.Clear();
             }
-           
+           */
             return RedirectToPage("Statistics");
         }
     }

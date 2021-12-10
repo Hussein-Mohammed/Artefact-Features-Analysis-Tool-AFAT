@@ -126,7 +126,7 @@ namespace Cuneiform_Style_Analyser.Pages
                 }
 
                 /// Read and save the tables
-                Cuneiform_Signs CSO_Data = new Cuneiform_Signs();
+                Cuneiform_Signs CSO_Data = new Cuneiform_Signs(_Uploaded_CSO);
                 List<CSO_Table> ListOfTables = new List<CSO_Table>();
                 ListOfTables = CSO_Data.Read_CSO_Tables(Tables_Path);
 
