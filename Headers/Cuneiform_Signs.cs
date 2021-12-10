@@ -228,6 +228,13 @@ namespace Cuneiform_Style_Analyser.Headers
                     CurVersion_Tab.Variation = CurOccTab.Substring(1, 1);
                     Tab.SignVersions.Add(CurVersion_Tab);
                 }
+
+                if (CurOccTab.Count() != 1 && CurOccTab.Count() != 2)
+                {
+                    CurVersion_Tab.count = 1;
+                    CurVersion_Tab.Variant = "0";
+                    Tab.SignVersions.Add(CurVersion_Tab);
+                }
             }
             return Tab.DeepCopy();
         }
@@ -341,7 +348,16 @@ namespace Cuneiform_Style_Analyser.Headers
                         continue;
                     }
 
-                    tab_Outer.Dist.PushBack(Cv2.Norm(tab_Outer.CSO_Features, tab_Inner.CSO_Features, NormTypes.L2));
+                    List<double> distances = new List<double>();
+                    distances = SignsDistance(tab_Outer.SignVersions, tab_Inner.SignVersions);
+                    Mat distances_Mat = new Mat();
+                    foreach(double dist in distances)
+                    {
+                        distances_Mat.PushBack(dist);
+                    }
+                    distances_Mat = distances_Mat.T();
+
+                    tab_Outer.Dist.PushBack(distances_Mat);
                 }
 
                 Mat Mean_Mat = new Mat();
