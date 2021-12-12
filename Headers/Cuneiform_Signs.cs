@@ -257,13 +257,13 @@ namespace Cuneiform_Style_Analyser.Headers
 
                 if (SignVersions1[i].Variant == "0" && SignVersions2[i].Variant == "0")
                 {
-                    CurDist = 0;
-                    // continue;
+                    //CurDist = 0;
+                    continue;
                 }
                 else if (SignVersions1[i].Variant == "0" || SignVersions2[i].Variant == "0")
                 {
-                    CurDist = 0.5;
-                    // continue;
+                    //CurDist = 0.5;
+                    continue;
                 }
                 else
                 {
@@ -370,11 +370,14 @@ namespace Cuneiform_Style_Analyser.Headers
                     List<double> distances = new List<double>();
                     distances = SignsDistance(tab_Outer.SignVersions, tab_Inner.SignVersions);
                     Mat distances_Mat = new Mat();
-                    foreach(double dist in distances)
+                    if (distances.Count() > 0)
                     {
-                        distances_Mat.PushBack(dist);
+                        distances_Mat.PushBack(distances.Average());
                     }
-                    distances_Mat = distances_Mat.T();
+                    else
+                    {
+                        distances_Mat.PushBack(1);
+                    }
 
                     tab_Outer.Dist.PushBack(distances_Mat);
                 }
@@ -411,11 +414,15 @@ namespace Cuneiform_Style_Analyser.Headers
                     List<double> CurDistances = new List<double>();
                     CurDistances = SignsDistance(tablet_table1.SignVersions, tablet_table2.SignVersions);
                     Mat distances_Mat = new Mat();
-                    foreach (double dist in CurDistances)
+                    
+                    if (CurDistances.Count() > 0)
                     {
-                        distances_Mat.PushBack(dist);
+                        distances_Mat.PushBack(CurDistances.Average());
                     }
-                    distances_Mat = distances_Mat.T();
+                    else
+                    {
+                        distances_Mat.PushBack(1);
+                    }
 
                     Table1.Dist.PushBack(distances_Mat);
                 }
