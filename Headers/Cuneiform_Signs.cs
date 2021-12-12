@@ -17,11 +17,13 @@ namespace Cuneiform_Style_Analyser.Headers
         public double Avg_SD_Dist = new double();
         public List<string> Outliers_Tablets = new List<string>();
         public List<Tuple<string, double>> style_Distances = new List<Tuple<string, double>>();
+        public Mat Dist = new Mat();
 
         public CSO_Table DeepCopy()
         {
             CSO_Table CSO_Table_Temp = new CSO_Table();
             CSO_Table_Temp.FileName = FileName;
+            CSO_Table_Temp.Dist = Dist.Clone();
             foreach (string sin in Signs)
             {
                 CSO_Table_Temp.Signs.Add(sin);
@@ -345,6 +347,7 @@ namespace Cuneiform_Style_Analyser.Headers
         /// <returns></returns>
         public MeanAndSD MeanAndSD_ForL2(List<Tablet> Tablets)
         {
+
             MeanAndSD Results = new MeanAndSD();
             double Sum_Means = new double();
             double Sum_SDs = new double();
@@ -373,6 +376,8 @@ namespace Cuneiform_Style_Analyser.Headers
                 Mat Mean_Mat = new Mat();
                 Mat SD_Mat = new Mat();
                 Cv2.MeanStdDev(tab_Outer.Dist, Mean_Mat, SD_Mat);
+                tab_Outer.Dist = new Mat();
+
                 double Mean = Mean_Mat.At<double>(0, 0);
                 double SD = SD_Mat.At<double>(0, 0);
                 tab_Outer.Mean_Dist = Mean;
@@ -385,6 +390,51 @@ namespace Cuneiform_Style_Analyser.Headers
             Results.SD = Sum_SDs / Counter;
 
             return Results;
+        }
+
+        public double DistanceBetweenTables(CSO_Table Table1, CSO_Table Table2)
+        {
+            double Final_distance = 0;
+            double Sum_Means = 0;
+            double Counter = 0;
+
+            foreach (Tablet tablet_table1 in Table1.Cuneiform_Tablet)
+            {
+                foreach (Tablet tablet_table2 in Table2.Cuneiform_Tablet)
+                {
+                    List<double> CurDistances = new List<double>();
+                    CurDistances = SignsDistance(tablet_table1.SignVersions, tablet_table2.SignVersions);
+                    Mat distances_Mat = new Mat();
+                    foreach (double dist in CurDistances)
+                    {
+                        distances_Mat.PushBack(dist);
+                    }
+                    distances_Mat = distances_Mat.T();
+
+                    Table1.Dist.PushBack(distances_Mat);
+                }
+
+                Mat Mean_Mat = new Mat();
+                Mat SD_Mat = new Mat();
+                Cv2.MeanStdDev(Table1.Dist, Mean_Mat, SD_Mat);
+                Table1.Dist = new Mat();
+
+                double Mean = Mean_Mat.At<double>(0, 0);
+                Sum_Means += Mean;
+            
+                Counter++;
+            }
+
+            if (Sum_Means > 0)
+            { 
+                Final_distance = Sum_Means / Counter; 
+            }
+            else
+            {
+                Final_distance = 0;
+            }
+
+            return Final_distance;
         }
     }
 }

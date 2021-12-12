@@ -124,17 +124,12 @@ namespace Cuneiform_Style_Analyser.Pages
             }
 
             // Calculate distances between Styles
-            /*
+            
             foreach (CSO_Table Outer_table in _uploaded_CSO.All_CSO_Tables)
             {
                 List<double> Current_Distances = new List<double>();
                 List<string> Tables_Names = new List<string>();
                 Mat Outer_table_Feature = new Mat();
-                foreach (float Occ in Outer_table.Average_Occurrences)
-                {
-                    Outer_table_Feature.Add(Occ);
-                }
-                Outer_table_Feature = Outer_table_Feature.T();
 
                 foreach (CSO_Table Inner_table in _uploaded_CSO.All_CSO_Tables)
                 {
@@ -143,13 +138,8 @@ namespace Cuneiform_Style_Analyser.Pages
 
                     Tables_Names.Add(Inner_table.FileName);
                     Mat Inner_table_Feature = new Mat();
-                    foreach (float Occ in Inner_table.Average_Occurrences)
-                    {
-                        Inner_table_Feature.Add(Occ);
-                    }
-                    Inner_table_Feature = Inner_table_Feature.T();
 
-                    Current_Distances.Add(Cv2.Norm(Outer_table_Feature, Inner_table_Feature, NormTypes.L2));
+                    Current_Distances.Add(CSO.DistanceBetweenTables(Outer_table, Inner_table));
                 }
 
                 var Results_csv = new System.Text.StringBuilder();
@@ -176,7 +166,7 @@ namespace Cuneiform_Style_Analyser.Pages
 
                 Results_csv.Clear();
             }
-           */
+           
             return RedirectToPage("Statistics");
         }
     }
