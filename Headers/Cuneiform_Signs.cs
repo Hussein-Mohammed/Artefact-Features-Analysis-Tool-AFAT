@@ -279,7 +279,13 @@ namespace Cuneiform_Style_Analyser.Headers
                         }
                         else
                         {
-                            CurDist = 1.0 / _uploaded_CSO.VariationsNumber[i];
+
+                            if (_uploaded_CSO.VariationsNumber[i] > 0)
+                            {
+                                CurDist = 1.0 / _uploaded_CSO.VariationsNumber[i];
+                            }
+                            else
+                                CurDist = 1.0;
                         }
                     }
                 }
