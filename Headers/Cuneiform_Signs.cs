@@ -353,8 +353,15 @@ namespace Cuneiform_Style_Analyser.Headers
         /// <returns></returns>
         public MeanAndSD MeanAndSD_ForL2(List<Tablet> Tablets)
         {
-
             MeanAndSD Results = new MeanAndSD();
+
+            if(Tablets.Count() <= 1)
+            {
+                Results.Mean = 0;
+                Results.SD = 0;
+                return Results;
+            }
+
             double Sum_Means = new double();
             double Sum_SDs = new double();
             double Counter = 0;
