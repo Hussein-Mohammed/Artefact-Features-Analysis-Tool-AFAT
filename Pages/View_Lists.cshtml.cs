@@ -93,7 +93,7 @@ namespace Cuneiform_Style_Analyser.Pages
 
                 Results_Statistics_General.AppendLine(table.Avg_Mean_Dist + "," + table.Avg_SD_Dist);
 
-                /// Detect outliers
+                // Detect outliers
                 Results_Statistics_General.AppendLine("");
                 Results_Statistics_General.AppendLine("Outliers");
 

@@ -253,9 +253,15 @@ namespace Cuneiform_Style_Analyser.Headers
             {
                 double CurDist = 0;
 
-                if (SignVersions1[i].Variant == "0" || SignVersions2[i].Variant == "0")
+                if (SignVersions1[i].Variant == "0" && SignVersions2[i].Variant == "0")
+                {
+                    CurDist = 0;
+                    // continue;
+                }
+                else if (SignVersions1[i].Variant == "0" || SignVersions2[i].Variant == "0")
                 {
                     CurDist = 0.5;
+                    // continue;
                 }
                 else
                 {
@@ -332,7 +338,11 @@ namespace Cuneiform_Style_Analyser.Headers
             }
         }
 
-
+        /// <summary>
+        /// Calculate statistical information about the distances between list of tablets. The mean and standard deviation are calculated
+        /// </summary>
+        /// <param name="Tablets"></param>
+        /// <returns></returns>
         public MeanAndSD MeanAndSD_ForL2(List<Tablet> Tablets)
         {
             MeanAndSD Results = new MeanAndSD();
