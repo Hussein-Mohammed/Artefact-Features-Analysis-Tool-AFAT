@@ -9,6 +9,18 @@
 
 <hr />
 
+<div class="row">
+    <div class="col-md-6">
+        <h1 style="text-align:center"><a asp-page="/Index"> <button class="btn btn-primary">Back</button> </a> </h1>
+    </div>
+    <div class="col-md-6">
+        <form method="post" asp-page-handler="Calculate">
+            <button type="submit" class="btn btn-primary" style="position:center; display:block; margin-left:auto; margin-right:auto; font-size:x-large">Calculate Statistics</button>
+        </form>
+    </div>
+</div>
+<hr />
+
 @{
     if (CSO.All_CSO_Tables != null && CSO.All_CSO_Tables.Count() > 0)
     {
@@ -17,10 +29,10 @@
             <thead>
                 <tr>
                     <th style="text-align:center">
-                        Name of CS Style
+                        Name of Artefacts` Features Table
                     </th>
                     <th style="text-align:center">
-                        Number of Uploaded Tablets
+                        Number of Uploaded Artefacts
                     </th>
                 </tr>
             </thead>

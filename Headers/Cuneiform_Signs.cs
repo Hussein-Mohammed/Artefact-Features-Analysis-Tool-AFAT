@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Cuneiform_Style_Analyser.Headers
@@ -87,6 +88,12 @@ namespace Cuneiform_Style_Analyser.Headers
         public string Variant { get; set; } = "";
         public string Variation { get; set; } = "";
         public int count { get; set; } = 0;
+    }
+
+    public class VariationsPerVariantPerSign
+    {
+        public string Variant { get; set; } = "0";
+        public int NumberOfVariations { get; set; } = 0;
     }
 
     public class Cuneiform_Signs
@@ -216,19 +223,52 @@ namespace Cuneiform_Style_Analyser.Headers
                 string CurOccTab = Tab.Occurrences[i];
                 VariantAndVariation CurVersion_Tab = new VariantAndVariation();
 
+                // Parse the occurrences
                 if (CurOccTab.Count() == 1)
                 {
-                    CurVersion_Tab.count = 1;
-                    CurVersion_Tab.Variant = CurOccTab;
-                    Tab.SignVersions.Add(CurVersion_Tab);
+                    //bool isNumeric = int.TryParse(CurOccTab, out _);
+                    //if (isNumeric)
+                    //{
+                        CurVersion_Tab.count = 1;
+                        CurVersion_Tab.Variant = CurOccTab;
+                        Tab.SignVersions.Add(CurVersion_Tab);
+                    //}
+                    //else
+                    //{
+                    //    CurVersion_Tab.count = 1;
+                    //    CurVersion_Tab.Variant = "0";
+                    //    Tab.SignVersions.Add(CurVersion_Tab);
+                    //    //continue;
+                    //}
                 }
 
                 if (CurOccTab.Count() == 2)
                 {
-                    CurVersion_Tab.count = 2;
-                    CurVersion_Tab.Variant = CurOccTab.Substring(0, 1);
-                    CurVersion_Tab.Variation = CurOccTab.Substring(1, 1);
-                    Tab.SignVersions.Add(CurVersion_Tab);
+                    //bool isNumeric = int.TryParse(CurOccTab, out _);
+                    //if (isNumeric)
+                    //{
+                        CurVersion_Tab.count = 2;
+                        CurVersion_Tab.Variant = CurOccTab.Substring(0, 1);
+                    //}
+                    //else
+                    //{
+                    //    CurVersion_Tab.count = 1;
+                    //    CurVersion_Tab.Variant = "0";
+                    //    Tab.SignVersions.Add(CurVersion_Tab);
+                    //    //continue;
+                    //}
+
+                    //if (CurOccTab.Substring(1, 1).All(Char.IsLetter))
+                    //{
+                        //CurVersion_Tab.count = 2;
+                        CurVersion_Tab.Variation = CurOccTab.Substring(1, 1);
+                        Tab.SignVersions.Add(CurVersion_Tab);
+                    //}
+                    //else
+                    //{
+                    //    CurVersion_Tab.count = 1;
+                    //    //continue;
+                    //}
                 }
 
                 if (CurOccTab.Count() != 1 && CurOccTab.Count() != 2)
@@ -255,14 +295,9 @@ namespace Cuneiform_Style_Analyser.Headers
             {
                 double CurDist = 0;
 
-                if (SignVersions1[i].Variant == "0" && SignVersions2[i].Variant == "0")
+                if (SignVersions1[i].Variant == "0" || SignVersions2[i].Variant == "0")
                 {
-                    //CurDist = 0;
-                    continue;
-                }
-                else if (SignVersions1[i].Variant == "0" || SignVersions2[i].Variant == "0")
-                {
-                    //CurDist = 0.5;
+
                     continue;
                 }
                 else
@@ -279,13 +314,27 @@ namespace Cuneiform_Style_Analyser.Headers
                         }
                         else
                         {
-
-                            if (_uploaded_CSO.VariationsNumber[i] > 0)
+                            bool VariantFound = false;
+                            foreach (var variant in _uploaded_CSO.VariationsNumber[i])
                             {
-                                CurDist = 1.0 / _uploaded_CSO.VariationsNumber[i];
+                                if (variant.Variant == SignVersions1[i].Variant)
+                                {
+                                    if (variant.NumberOfVariations > 0)
+                                    {
+                                        CurDist = 1.0 / variant.NumberOfVariations;
+                                    }
+                                    else
+                                        CurDist = 1.0;
+
+                                    VariantFound = true;
+                                    break;
+                                }
+                                
+                                if(!VariantFound)
+                                {
+                                    CurDist = 0;
+                                }
                             }
-                            else
-                                CurDist = 1.0;
                         }
                     }
                 }
@@ -310,11 +359,13 @@ namespace Cuneiform_Style_Analyser.Headers
                 Alphabet.Add(c.ToString());
             }
             
+            // initiate the VariationsNumber list of lists
             if(Tables.Count() > 0)
             {
                 foreach(var sign in Tables[0].Signs)
                 {
-                    _uploaded_CSO.VariationsNumber.Add(0);
+                    List<VariationsPerVariantPerSign> TempList = new List<VariationsPerVariantPerSign>();
+                    _uploaded_CSO.VariationsNumber.Add(TempList);
                 }
             }    
 
@@ -325,23 +376,56 @@ namespace Cuneiform_Style_Analyser.Headers
                     int index = 0;
                     foreach (VariantAndVariation version in tab.SignVersions)
                     {
+                        string CurVariant = version.Variant;
                         string CurVariation = version.Variation;
-                        if (String.IsNullOrWhiteSpace(CurVariation))
+
+                        int CurIndex = Alphabet.FindIndex(x => x == CurVariation);
+                        int CurVariationNumber = CurIndex + 1;
+
+                        // Skip when certain conditions apply
+                        if (String.IsNullOrWhiteSpace(CurVariation) || CurVariant == "0" || CurVariation == "0")
                         {
                             index++;
                             continue;
                         }
 
-                        int CurIndex = Alphabet.FindIndex(x => x == CurVariation);
-                        int CurVariationNumber = CurIndex + 1;
-                        if(CurVariationNumber > _uploaded_CSO.VariationsNumber[index])
+                        if (_uploaded_CSO.VariationsNumber[index].Count() > 0 || _uploaded_CSO.VariationsNumber[index] != null)
                         {
-                            _uploaded_CSO.VariationsNumber[index] = CurVariationNumber;
+                            bool VariantFound = false;
+
+                            foreach (var variant in _uploaded_CSO.VariationsNumber[index])
+                            {
+                                if (variant.Variant == CurVariant)
+                                {
+                                    
+                                    if (CurVariationNumber > variant.NumberOfVariations)
+                                    {
+                                        variant.NumberOfVariations = CurVariationNumber;
+                                    }
+
+                                    VariantFound = true;
+                                    break;
+                                }
+                            }
+
+                            if(!VariantFound)
+                            {
+                                VariationsPerVariantPerSign temp = new VariationsPerVariantPerSign();
+                                temp.Variant = CurVariant;
+                                temp.NumberOfVariations = CurVariationNumber;
+                                _uploaded_CSO.VariationsNumber[index].Add(temp);
+                            }
+                        }
+                        else
+                        {
+                            VariationsPerVariantPerSign temp = new VariationsPerVariantPerSign();
+                            temp.Variant = CurVariant;
+                            temp.NumberOfVariations = CurVariationNumber;
+                            _uploaded_CSO.VariationsNumber[index].Add(temp);
                         }
 
                         index++;
                     }
-                    
                 }
             }
         }
