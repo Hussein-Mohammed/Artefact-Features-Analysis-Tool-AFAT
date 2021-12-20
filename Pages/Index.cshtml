@@ -1,12 +1,13 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Upload Occurrences-Frequency tables to be Analysed";
+    ViewData["Title"] = "Upload Artefact-Features tables to be Analysed";
 }
 
-<h1 style="text-align:center; font-style:normal; color:red">This is a beta version for experimentation purposes only! To be used by Dr. Wiebke Beyer from the CSMC.</h1>
+@*<h4 style="text-align:center; font-style:normal; color:red">This is a beta version for experimentation purposes only!
+    To be used by Dr. Wiebke Beyer and Ms. Aneta Yotova from the CSMC.</h4>*@
 
-<h3 style="text-align:center; font-style:italic">@ViewData["Title"]</h3>
+<h4 style="text-align:center; font-style:italic">@ViewData["Title"]</h4>
 
 <div style="text-align:center">
     <form method="post" asp-page-handler="Upload" enctype="multipart/form-data" style="display: inline-block">
@@ -16,6 +17,7 @@
                     Select Files
                 </div>
                 <input type="file" name="files" multiple />
+                <br />
                 <br />
                 <button type="submit" style="background: #337ab7; border-radius: 50px; font-style: normal; font-size: 20px"> Upload and Validate </button>
             </div>
@@ -33,14 +35,14 @@
 <br />
 <hr />
 <p style="text-align:center">
-    This software tool has been developed by <a href="http://uhh.de/hussein-adnan-mohammed"> Dr. Hussein Mohammed</a>
-    as a part of sub-project RFA05: <a href="https://www.written-artefacts.uni-hamburg.de/research/field-a/rfa05.html">
+    This software tool has been developed by <a href="https://www.csmc.uni-hamburg.de/about/people/people-list/mohammed.html"> Dr. Hussein Mohammed</a>
+    as a part of sub-project RFA05: <a href="https://www.csmc.uni-hamburg.de/written-artefacts/field-a/rfa05.html">
         Pattern Recognition in 2D Data from Digitised Images and Advanced Aquisition Techniques.
     </a>
 </p>
 <br />
 <p>
-    The main goal of this software tool is to analyse Occurrences-Frequency tablets in order to extract some
+    The main goal of this software tool is to analyse artefact features in order to extract some
     statistical information such as the mean, standard deviation and outliers. The main tasks achieved by this software tool are:
     <ul>
         <li>
@@ -50,7 +52,7 @@
             Calculating general statistics for each table as a whole
         </li>
         <li>
-            Calculating distances between different tables of occurrences using the L2 distance measure
+            Calculating distances between different tables
         </li>
     </ul>
 </p>
@@ -60,25 +62,19 @@
     <h3 style="text-align:center">Guidelines:</h3>
     <ol>
         <li>
-            You can add Occurrences-Frequency tables to be analysed by simply uploading the manually generated tabular data. Each uploaded file
-            should consist of occurrences from the same style (or expected to be from the same style).
+            Select Artefact-Features tables to be analysed simply by cliking the "Select Files" button. Each uploaded table
+            should consist of entries (artefacts) from the same class of features (e.g. same handwriting style), or expected to be from the same class.
         </li>
         <li>
-            The columns in each table contains signs occurrences, while the rows contains individual tablets entries as can be seen in the image below
-            part of a cuneiform signs occurrences table:
-            <div class="row">
-                <div class="col-12">
-                    <img src="~/images/CSO.png" class="img-responsive" style="border:solid; width: 95%" />
-                </div>
-            </div>
-        </li>
-        <br />
-        <li>
-            Only files with the ".csv" extension will be considered by this application. Furthermore, the number of signs (columns) needs to be the same;
-            otherwise, uploaded files will be considered invalid.
+            The columns in each table should present one feature, while the rows contains the feature values of each artefact. Empty and "0" entires
+            will be ignored in the analysis.
         </li>
         <li>
-            File names can be anything, but they will be considered as the style name.
+            Only files with ".csv" extension will be considered by this application. Furthermore, the number of features (columns) needs to be the same
+            in all tables; otherwise, uploaded files will be considered invalid.
+        </li>
+        <li>
+            File names can be anything, but they will be considered as the class name of the artefacts in that table.
         </li>
     </ol>
 </div>

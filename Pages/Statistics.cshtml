@@ -144,7 +144,7 @@
                         <thead>
                             <tr>
                                 <th style="text-align:center">
-                                    Artefacts` Features Table
+                                    Artefact-Features Table
                                 </th>
                                 <th style="text-align:center">
                                     Distance
@@ -194,23 +194,24 @@
     <h3 style="text-align:center">Guidelines:</h3>
     <ul>
         <li>
-            The euclidean distance is calculated between each tablet occurrences within the same style.
+            The euclidean distance is calculated between each set of artefact-features within the same table.
             Then these distance values are used to calculate the Mean and Standard Deviation (SD) of the
-            tablets (Individual statistics) and the style (General statistics).
+            artefacts (Individual statistics) and the class of artefacts / table (General statistics).
         </li>
         <li>
-            The mean distance and the standard distance deviation of each tablet is calculated in relation
-            to the other tablets within the same style.
+            The mean distance and the standard deviation of each artefact is calculated in relation
+            to the other artefacts within the same table.
         </li>
         <li>
-            The average of all mean distances and standard deviations from all tablets within a given style
+            The average of all mean distances and standard deviations from all artefacts within a given class/table
             is calculated.
         </li>
         <li>
-            The statistical outliers (if any) are detected in each style. Cuneiform Signs Occurrences of a
-            given tablet is assumed to be an exception/outlier/abnormal if the difference between it's mean
-            distance and the mean distance of the whole style is greater than the standard amount of deviation.
-            This does not mean that the outliers does not belong to the style, it only means that you should have
+            The statistical outliers (if any) are detected in each class/table. A set of artefact features of an artefact 
+            is assumed to be an exception/outlier/abnormal if the difference between it's mean distance and the mean distance
+            of the whole class/table is greater than the standard amount of deviation for that table.
+            <br />
+            This does not mean that the outliers does not belong to the class, it only means that you should have
             a careful look at them.
         </li>
     </ul>

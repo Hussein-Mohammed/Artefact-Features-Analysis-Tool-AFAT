@@ -13,7 +13,7 @@ namespace Cuneiform_Style_Analyser.Pages
 
         public void OnGet()
         {
-            Message = "Occurrences-Frequency Analysis Tool v1.0 (OFAT1)";
+            Message = "Artefact-Features Analysis Tool v1.0 (AFAT)";
         }
     }
 }

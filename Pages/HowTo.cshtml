@@ -1,7 +1,7 @@
 ﻿@page
 @model Cuneiform_Style_Analyser.Pages.HowToModel
 @{
-    ViewData["Title"] = "How To Use The Occurrences-Frequency Analysis Tool v1.0 (OFAT1)";
+    ViewData["Title"] = "How To Use The Artefact-Features Analysis Tool v1.0 (AFAT)";
 }
 
 <h3 style="text-align:center; font-style:italic">@ViewData["Title"]</h3>
@@ -12,15 +12,15 @@
         these instructions and use them as guidelines.
     </li>
     <li>
-        Start the analysis by selecting the Occurrences-Frequency tables you want to analyse by clicking
-        the "Select Files" button.
+        Start the analysis by by clicking the "Select Files" button and selecting the Artefact-Features tables 
+        you want to analyse.
     </li>
     <li>
         Upload the Files and validate them by clicking the "Upoad and Validate" button.
     </li>
     <li>
-        If the application finds at least one valid file (check relevant guidelines), a list of styles
-        will appear with their associated tablets. Otherwise, a message will appear to tell you that no 
+        If the application finds at least one valid file (check relevant guidelines), a list of tables
+        will appear with their artefact entries. Otherwise, a message will appear to tell you that no 
         valid file has been uploaded.
     </li>
     <li>
@@ -28,8 +28,8 @@
         styles.
     </li>
     <li>
-        The following results will be calculated: Individual statistics for each tablet, general statistics
-        for each style, and L2 distances between different styles.
+        The following results will be calculated: Individual statistics for each artefact, general statistics
+        for each class of artefacts, and L2 distances between different classes.
     </li>
     <li>
         You can download all results as ".csv" files.

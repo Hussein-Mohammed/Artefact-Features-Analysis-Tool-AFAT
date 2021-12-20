@@ -2,7 +2,7 @@
 @model Cuneiform_Style_Analyser.Pages.View_ListsModel
 @inject Cuneiform_Style_Analyser.Headers.Uploaded_CSO CSO
 @{
-    ViewData["Title"] = "Uploaded Cuneiform Signs Occurrences";
+    ViewData["Title"] = "Selected Artefact-Features Tables";
 }
 
 <h3 style="text-align:center; font-style:italic">@ViewData["Title"]</h3>
@@ -29,10 +29,10 @@
             <thead>
                 <tr>
                     <th style="text-align:center">
-                        Name of Artefacts` Features Table
+                        Name of Artefact-Features Table
                     </th>
                     <th style="text-align:center">
-                        Number of Uploaded Artefacts
+                        Number of Artefacts
                     </th>
                 </tr>
             </thead>
@@ -86,16 +86,16 @@
     <h3 style="text-align:center">Guidelines:</h3>
     <ul>
         <li>
-            You can view the extracted tablets from each table by clicking on the name of the style.
+            You can view the extracted artefact entries in each table by clicking on the name of the table.
         </li>
         <li>
-            Check the list of uploaded tables and validate whether the extracted tablets of each table are correct.
+            Check the list of uploaded tables and validate whether the extracted entries in each table are correct.
         </li>
         <li>
-            The number of styles corresponds to the number of valid files only. Any invalid file will be ignored by the application.
+            Any invalid file will be ignored by the application.
         </li>
         <li>
-            You can delete any style by simply clicking the "Delete" button.
+            You can delete any table by simply clicking the "Delete" button.
         </li>
     </ul>
 </div>
