@@ -66,8 +66,19 @@
             should consist of entries (artefacts) from the same class of features (e.g. same handwriting style), or expected to be from the same class.
         </li>
         <li>
-            The columns in each table should present one feature, while the rows contains the feature values of each artefact. Empty and "0" entires
+            Each column in a table should present one feature, while the rows should contains the feature values of each artefact. Empty and "0" entires
             will be ignored in the analysis.
+        </li>
+        <li>
+            The value of each feature in a table is represented by a positive integer (from 1 to 9), which describes the particular variant of this feature in an artefact. 
+            Furthermore, each variant can have any number of variations, represented by an alphabetical letter (from a to z), as can be seen in this example:
+            <div class="row">
+                <div class="col-3">
+                </div>
+                <div class="col-6">
+                    <img src="~/images/AFAT_Table.png" class="img-responsive" style="border:solid; width: 95%" />
+                </div>
+            </div>
         </li>
         <li>
             Only files with ".csv" extension will be considered by this application. Furthermore, the number of features (columns) needs to be the same
