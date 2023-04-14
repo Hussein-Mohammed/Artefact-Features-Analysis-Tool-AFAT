@@ -1,1 +1,1 @@
-# Occurrence-Frequency-Analysis-Tool-OFAT
+# Artefact-Features-Analysis-Tool-AFAT
