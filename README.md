@@ -1,4 +1,4 @@
-# Artefact-Features-Analysis-Tool-AFAT
+# Artefact Features Analysis Tool (AFAT)
 
 The main goal of this software tool is to analyse artefact features in order to extract some statistical information such as the mean, standard deviation and outliers. The main tasks achieved by this software tool are:
 
